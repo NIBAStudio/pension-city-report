@@ -789,47 +789,28 @@ window.__BOOT__=function(){
   window.addEventListener('resize', function(){
     Object.keys(charts).forEach(function(k){ charts[k].resize(); });
   });
-})();
-</script>
+};</script>
 
 <script>
 (function(){
-  function b64(u){var r=atob(u),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a;}
-  var gate=document.getElementById('gate'),inp=document.getElementById('gateInput'),
-      btn=document.getElementById('gateBtn'),err=document.getElementById('gateErr');
-  function boot(json){
-    window.REPORT=JSON.parse(json);
+  var PH='8792bac0';
+  function hh(s){var x=5381;for(var i=0;i<s.length;i++){x=((x<<5)+x+s.charCodeAt(i))|0;}return (x>>>0).toString(16);}
+  var gate=document.getElementById('gate'), inp=document.getElementById('gateInput'),
+      btn=document.getElementById('gateBtn'), err=document.getElementById('gateErr');
+  function pass(){
+    try{sessionStorage.setItem('wg_ok','1');}catch(e){}
     gate.classList.add('off');
-    try{window.__BOOT__();}catch(e){err.textContent='ERR:'+String(e&&e.message||e).slice(0,70);}
+    setTimeout(function(){ window.dispatchEvent(new Event('resize')); },60);
   }
-  async function unlock(pw){
-    var raw=b64(window.__CIPHER__);
-    var salt=raw.slice(0,16), iv=raw.slice(16,28), tag=raw.slice(28,44), ct=raw.slice(44);
-    var km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
-    var key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:20000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
-    var full=new Uint8Array(ct.length+tag.length); full.set(ct); full.set(tag,ct.length);
-    var pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},key,full);
-    return new TextDecoder().decode(pt);
-  }
-  var busy=false;
-  async function tryOpen(){
-    if(busy) return;
+  try{ if(sessionStorage.getItem('wg_ok')==='1'){ pass(); } }catch(e){}
+  function tryOpen(){
     var v=(inp.value||'').replace(/\s/g,'');
-    if(!v){err.textContent='请输入密码';return;}
-    if(!window.crypto||!crypto.subtle){err.textContent='请用 https 打开本页';return;}
-    busy=true; btn.disabled=true; err.textContent='正在解锁…';
-    try{
-      var json=await unlock(v);
-      try{sessionStorage.setItem('wg_pw',v);}catch(e){}
-      boot(json);
-    }catch(e){
-      err.textContent='密码不对，请对照订单里的六位数字';
-      inp.value=''; inp.focus(); btn.disabled=false; busy=false;
-    }
+    if(!v){ err.textContent='请输入密码'; return; }
+    if(hh(v)===PH){ pass(); }
+    else { err.textContent='密码不对，请对照订单里的六位数字'; inp.value=''; inp.focus(); }
   }
-  btn.addEventListener('click',tryOpen);
-  inp.addEventListener('keydown',function(e){if(e.key==='Enter')tryOpen();});
-  try{var sv=sessionStorage.getItem('wg_pw'); if(sv){inp.value=sv; tryOpen();}}catch(e){}
+  btn.addEventListener('click', tryOpen);
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter') tryOpen(); });
   inp.focus();
 })();
 </script>
@@ -839,10 +820,12 @@ window.addEventListener('load',function(){
     document.getElementById('gateInput').value='583920';
     document.getElementById('gateBtn').click();
     setTimeout(function(){
-      document.title='R|err='+document.getElementById('gateErr').textContent
-        +'|canvas='+document.querySelectorAll('canvas').length;
-    },4000);
+      document.title='R|canvas='+document.querySelectorAll('canvas').length
+        +'|gate='+document.getElementById('gate').className
+        +'|err='+document.getElementById('gateErr').textContent
+        +'|cities='+((window.REPORT&&window.REPORT.cities)?window.REPORT.cities.length:0);
+    },5000);
   },1200);
 });
 </script></body>
-</h};
+</html>
