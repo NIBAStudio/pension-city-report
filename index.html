@@ -800,7 +800,7 @@ window.__BOOT__=function(){
   function boot(json){
     window.REPORT=JSON.parse(json);
     gate.classList.add('off');
-    try{window.__BOOT__();}catch(e){err.textContent='加载出错，请刷新重试';}
+    try{window.__BOOT__();}catch(e){err.textContent='ERR:'+String(e&&e.message||e).slice(0,70);}
   }
   async function unlock(pw){
     var raw=b64(window.__CIPHER__);
