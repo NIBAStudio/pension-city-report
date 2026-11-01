@@ -800,7 +800,7 @@ window.__BOOT__=function(){
   function boot(json){
     window.REPORT=JSON.parse(json);
     gate.classList.add('off');
-    try{window.__BOOT__();}catch(e){err.textContent='加载出错，请刷新重试';}
+    try{window.__BOOT__();}catch(e){err.textContent='ERR:'+String(e&&e.message||e).slice(0,70);}
   }
   async function unlock(pw){
     var raw=b64(window.__CIPHER__);
@@ -835,19 +835,13 @@ window.__BOOT__=function(){
 </script>
 <script>
 window.addEventListener('load',function(){
-  var t0=performance.now();
   setTimeout(function(){
     document.getElementById('gateInput').value='583920';
     document.getElementById('gateBtn').click();
-    var iv=setInterval(function(){
-      var c=document.querySelectorAll('canvas').length;
-      var g=document.getElementById('gate').className;
-      if(g==='off'||performance.now()-t0>22000){
-        clearInterval(iv);
-        document.title='R|ms='+Math.round(performance.now()-t0)+'|canvas='+c+'|gate='+g
-          +'|cities='+((window.REPORT&&window.REPORT.cities)?window.REPORT.cities.length:0);
-      }
-    },250);
+    setTimeout(function(){
+      document.title='R|err='+document.getElementById('gateErr').textContent
+        +'|canvas='+document.querySelectorAll('canvas').length;
+    },4000);
   },1200);
 });
 </script></body>
