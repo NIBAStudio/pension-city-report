@@ -835,20 +835,21 @@ window.__BOOT__=function(){
 </script>
 <script>
 window.addEventListener('load',function(){
-  var e0='';
-  window.addEventListener('error',function(ev){e0=String(ev.message).slice(0,80);});
+  var t0=performance.now(), marks={};
   setTimeout(function(){
+    marks.click=Math.round(performance.now()-t0);
     document.getElementById('gateInput').value='583920';
     document.getElementById('gateBtn').click();
-    setTimeout(function(){
-      document.title='R|canvas='+document.querySelectorAll('canvas').length
-        +'|gate='+document.getElementById('gate').className
-        +'|err='+document.getElementById('gateErr').textContent
-        +'|echarts='+(typeof echarts)
-        +'|cities='+((window.REPORT&&window.REPORT.cities)?window.REPORT.cities.length:0)
-        +'|e0='+e0;
-    },7000);
-  },1500);
+    var iv=setInterval(function(){
+      var c=document.querySelectorAll('canvas').length;
+      var g=document.getElementById('gate').className;
+      if(g==='off'||performance.now()-t0>25000){
+        clearInterval(iv);
+        document.title='R|ms='+Math.round(performance.now()-t0)+'|canvas='+c+'|gate='+g
+          +'|cities='+((window.REPORT&&window.REPORT.cities)?window.REPORT.cities.length:0);
+      }
+    },300);
+  },1200);
 });
 </script></body>
 </h};
